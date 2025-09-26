@@ -1,6 +1,0 @@
-@tl2_tp4_2025_nicopowell_HostAddress = http://localhost:5015
-
-GET {{tl2_tp4_2025_nicopowell_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
