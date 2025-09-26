@@ -1,6 +1,15 @@
 public class AccesoADatosCSV : IAccesoADatos
 {
-    public Cadeteria LeerCadeteria(string archivoCadeteria, string archivoCadetes)
+    private readonly string archivoCadeteria;
+    private readonly string archivoCadetes;
+
+    public AccesoADatosCSV(string archivoCadeteria, string archivoCadetes)
+    {
+        this.archivoCadeteria = archivoCadeteria;
+        this.archivoCadetes = archivoCadetes;
+    }
+
+    public Cadeteria LeerCadeteria()
     {
         Cadeteria cadeteria = null;
 
@@ -44,5 +53,10 @@ public class AccesoADatosCSV : IAccesoADatos
         }
 
         return cadeteria;
+    }
+
+    public void GuardarCadeteria(Cadeteria cadeteria)
+    {
+        
     }
 }

@@ -1,4 +1,5 @@
 public interface IAccesoADatos
 {
-    Cadeteria LeerCadeteria(string archivoCadeteria, string archivoCadetes);
+    Cadeteria LeerCadeteria();
+    void GuardarCadeteria(Cadeteria cadeteria);
 }

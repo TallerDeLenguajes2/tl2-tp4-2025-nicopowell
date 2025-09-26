@@ -23,7 +23,7 @@ public class Cadeteria
     {
         return 500 * this.ListadoPedidos.Count(p => p.CadeteAsignado != null && p.CadeteAsignado.Id == idCadete && p.Estado == "Completado");
     }
-    
+
     public bool AsignarCadeteAPedido(int idCadete, int idPedido)
     {
         var cadete = listadoCadetes.FirstOrDefault(c => c.Id == idCadete);
@@ -34,5 +34,18 @@ public class Cadeteria
 
         pedido.CadeteAsignado = cadete;
         return true;
+    }
+
+    public void AltaPedido(Pedido pedido)
+    {
+        pedido.CadeteAsignado = null;
+        var ultimo = listadoPedidos.Last();
+        int index = 1;
+        if (ultimo is not null)
+        {
+            index = ultimo.Nro + 1;
+        }
+        pedido.Nro = index;
+        listadoPedidos.Add(pedido);
     }
 }
