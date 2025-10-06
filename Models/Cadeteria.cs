@@ -49,4 +49,19 @@ public class Cadeteria
         pedido.Nro = index;
         listadoPedidos.Add(pedido);
     }
+
+        public void AgregarListaCadetes(List<Cadete> cadetes)
+    {
+        this.listadoCadetes = cadetes ?? new List<Cadete>();
+    }
+
+    public void AgregarListaPedidos(List<Pedido> pedidos)
+    {
+        this.listadoPedidos = pedidos ?? new List<Pedido>();
+    }
+
+    public List<Pedido> ListaPedidos()
+    {
+        return listadoPedidos;
+    }
 }

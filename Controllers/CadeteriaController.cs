@@ -5,30 +5,38 @@ using Sistema;
 [Route("[controller]")]
 public class CadeteriaController : ControllerBase
 {
-    private AccesoADatosJSON _datosCadeteria;
+    private Cadeteria cadeteria;
+    private AccesoADatosCadeteria ADCadeteria;
+    private AccesoADatosCadetes ADCadetes;
+    private AccesoADatosPedidos ADPedidos;
+
     public CadeteriaController()
     {
-        _datosCadeteria = new AccesoADatosJSON("./cadeteria.json", "./cadetes.json", "./pedidos.json");
+        ADCadeteria = new AccesoADatosCadeteria("./cadeteria.json");
+        ADCadetes = new AccesoADatosCadetes("./cadetes.json");
+        ADPedidos = new AccesoADatosPedidos("./pedidos.json");
+        
+        // Inicializar la cadetería según el TP5
+        cadeteria = ADCadeteria.LeerCadeteria();
+        cadeteria.AgregarListaCadetes(ADCadetes.Obtener());
+        cadeteria.AgregarListaPedidos(ADPedidos.Obtener());
     }
 
     [HttpGet("Pedidos")]
     public IActionResult GetPedidos()
     {
-        var cadeteria = _datosCadeteria.LeerCadeteria();
         return Ok(cadeteria.ListadoPedidos);
     }
 
     [HttpGet("Cadetes")]
     public IActionResult GetCadetes()
     {
-        var cadeteria = _datosCadeteria.LeerCadeteria();
         return Ok(cadeteria.ListadoCadetes);
     }
 
     [HttpGet("Informe")]
     public IActionResult GetInforme()
     {
-        var cadeteria = _datosCadeteria.LeerCadeteria();
         return Ok(SistemaCadeteria.ObtenerInforme(cadeteria));
     }
 
@@ -36,24 +44,22 @@ public class CadeteriaController : ControllerBase
     public IActionResult AgregarPedido(Pedido pedido)
     {
         // Validaciones
-        if (string.IsNullOrEmpty(pedido.Obs)) return BadRequest("Las observaciones no pueden ser vacias");
+        if (string.IsNullOrEmpty(pedido.Obs)) 
+            return BadRequest("Las observaciones no pueden ser vacias");
 
-        var cadeteria = _datosCadeteria.LeerCadeteria();
         cadeteria.AltaPedido(pedido);
-        _datosCadeteria.GuardarCadeteria(cadeteria);
+        ADPedidos.Guardar(cadeteria.ListaPedidos()); // Guardar después de agregar
         return Created();
     }
 
     [HttpPut("AsignarPedido")]
     public IActionResult AsignarPedido(int idPedido, int idCadete)
     {
-        var cadeteria = _datosCadeteria.LeerCadeteria();
-
         bool asignacionExitosa = cadeteria.AsignarCadeteAPedido(idCadete, idPedido);
 
         if (asignacionExitosa)
         {
-            _datosCadeteria.GuardarCadeteria(cadeteria);
+            ADPedidos.Guardar(cadeteria.ListaPedidos()); // Guardar después de asignar
             var pedido = cadeteria.ListadoPedidos.Find(p => p.Nro == idPedido);
             return Ok(pedido);
         }
@@ -66,8 +72,6 @@ public class CadeteriaController : ControllerBase
     [HttpPut("CambiarEstadoPedido")]
     public IActionResult CambiarEstadoPedido(int idPedido)
     {
-        var cadeteria = _datosCadeteria.LeerCadeteria();
-
         var pedido = cadeteria.ListadoPedidos.FirstOrDefault(p => p.Nro == idPedido);
 
         if (pedido == null)
@@ -81,58 +85,46 @@ public class CadeteriaController : ControllerBase
         }
 
         pedido.Estado = pedido.Estado == "Pendiente" ? "Completado" : "Pendiente";
-
-        _datosCadeteria.GuardarCadeteria(cadeteria);
+        ADPedidos.Guardar(cadeteria.ListaPedidos()); // Guardar después de cambiar estado
         return Ok(pedido);
     }
 
     [HttpPut("CambiarCadetePedido")]
     public IActionResult CambiarCadetePedido(int idPedido, int idNuevoCadete)
     {
-        var cadeteria = _datosCadeteria.LeerCadeteria();
-
-        // Buscar el pedido
         var pedido = cadeteria.ListadoPedidos.FirstOrDefault(p => p.Nro == idPedido);
         if (pedido == null)
         {
             return NotFound("No se encontró el pedido");
         }
 
-        // Buscar el nuevo cadete
         var nuevoCadete = cadeteria.ListadoCadetes.FirstOrDefault(c => c.Id == idNuevoCadete);
         if (nuevoCadete == null)
         {
             return NotFound("No se encontró el cadete");
         }
 
-        // Validar que el pedido esté asignado (tiene un cadete actual)
         if (pedido.CadeteAsignado == null)
         {
             return BadRequest("El pedido no está asignado a ningún cadete. Use AsignarPedido en su lugar.");
         }
 
-        // Validar que no se esté asignando al mismo cadete
         if (pedido.CadeteAsignado.Id == idNuevoCadete)
         {
             return BadRequest("El pedido ya está asignado a este cadete");
         }
 
-        // Validar que el pedido no esté completado
         if (pedido.Estado == "Completado")
         {
             return BadRequest("No se puede cambiar el cadete de un pedido completado");
         }
 
-        // Cambiar el cadete
         pedido.CadeteAsignado = nuevoCadete;
-
-        _datosCadeteria.GuardarCadeteria(cadeteria);
-
-        return Ok(new
-        {
-            mensaje = "Cadete cambiado correctamente",
+        ADPedidos.Guardar(cadeteria.ListaPedidos()); // Guardar después de cambiar cadete
+        
+        return Ok(new { 
+            mensaje = "Cadete cambiado correctamente", 
             pedidoId = pedido.Nro,
-            cadeteAnteriorId = pedido.CadeteAsignado.Id, // Sería bueno guardar el anterior antes de cambiar
             nuevoCadeteId = nuevoCadete.Id,
             nuevoCadeteNombre = nuevoCadete.Nombre
         });
