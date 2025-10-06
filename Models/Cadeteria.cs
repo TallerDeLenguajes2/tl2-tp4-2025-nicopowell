@@ -39,10 +39,11 @@ public class Cadeteria
     public void AltaPedido(Pedido pedido)
     {
         pedido.CadeteAsignado = null;
-        var ultimo = listadoPedidos.Last();
+        pedido.Estado = "Pendiente";
         int index = 1;
-        if (ultimo is not null)
+        if (listadoPedidos.Any())
         {
+            var ultimo = listadoPedidos.Last();
             index = ultimo.Nro + 1;
         }
         pedido.Nro = index;

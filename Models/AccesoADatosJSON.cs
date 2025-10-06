@@ -30,10 +30,8 @@ public class AccesoADatosJSON : IAccesoADatos
             string jsonPedidos = File.ReadAllText(archivoPedidos);
             List<Pedido> pedidos = JsonSerializer.Deserialize<List<Pedido>>(jsonPedidos);
 
-            cadeteria.ListadoCadetes = cadetes;
-
-            if (cadeteria.ListadoPedidos == null)
-                cadeteria.ListadoPedidos = new List<Pedido>();
+            cadeteria.ListadoCadetes = cadetes ?? new List<Cadete>();
+            cadeteria.ListadoPedidos = pedidos ?? new List<Pedido>();
 
             return cadeteria;
         }
@@ -45,8 +43,24 @@ public class AccesoADatosJSON : IAccesoADatos
 
     public void GuardarCadeteria(Cadeteria cadeteria)
     {
-        string jsonCadeteria = JsonSerializer.Serialize<Cadeteria>(cadeteria);
+        var cadeteriaParaGuardar = new 
+            {
+                Nombre = cadeteria.Nombre,
+                Telefono = cadeteria.Telefono
+                // Excluir ListadoCadetes y ListadoPedidos
+            };
+        
+        string jsonCadeteria = JsonSerializer.Serialize(cadeteriaParaGuardar);
         string jsonCadetes = JsonSerializer.Serialize<List<Cadete>>(cadeteria.ListadoCadetes);
         string jsonPedidos = JsonSerializer.Serialize<List<Pedido>>(cadeteria.ListadoPedidos);
+
+        try
+        {
+            File.WriteAllText(archivoCadeteria, jsonCadeteria);
+            File.WriteAllText(archivoCadetes, jsonCadetes);
+            File.WriteAllText(archivoPedidos, jsonPedidos);
+        } catch (Exception) {
+            
+        }
     }
 }

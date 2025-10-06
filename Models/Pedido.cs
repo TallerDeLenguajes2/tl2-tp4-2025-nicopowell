@@ -12,6 +12,11 @@ public class Pedido
     public string Estado { get => estado; set => estado = value; }
     public Cadete CadeteAsignado { get => cadeteAsignado; set => cadeteAsignado = value; }
 
+    public Pedido()
+    {
+        Estado = "Pendiente";
+        CadeteAsignado = null;
+    }
     public Pedido(int nro, string obs, string estado, string nombreCliente, string direccionCliente, long telefonoCliente, string datosReferenciaDireccionCliente)
     {
         this.nro = nro;

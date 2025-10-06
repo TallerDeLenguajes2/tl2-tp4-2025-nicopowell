@@ -1,6 +1,1 @@
-[
-  { "Id": 1, "Nombre": "Juan",   "Direccion": "Sarmiento 1000", "Telefono": 3812222222 },
-  { "Id": 2, "Nombre": "Manuel", "Direccion": "Peru 500",       "Telefono": 3813333333 },
-  { "Id": 3, "Nombre": "Ana",    "Direccion": "Rondeau 900",    "Telefono": 3814444444 },
-  { "Id": 4, "Nombre": "Pepe",   "Direccion": "Jujuy 35",       "Telefono": 3815555555 }
-]
+[{"Id":1,"Direccion":"Sarmiento 1000","Telefono":3812222222,"Nombre":"Juan"},{"Id":2,"Direccion":"Peru 500","Telefono":3813333333,"Nombre":"Manuel"},{"Id":3,"Direccion":"Rondeau 900","Telefono":3814444444,"Nombre":"Ana"},{"Id":4,"Direccion":"Jujuy 35","Telefono":3815555555,"Nombre":"Pepe"}]
